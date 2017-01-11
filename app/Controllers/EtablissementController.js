@@ -109,7 +109,7 @@ router.post('/add', function(req, res)
 		}
 		else
 		{
-			res.status(200).json(result);
+			res.status(200).json(result.id);
 		}
 		
 	})
@@ -144,6 +144,11 @@ router.post('/createAdmin', function(req, res)
 			res.status(200).json(true);
 		}
 	});
+});
+
+router.post('/intervenant/add', function(req, res)
+{
+	req.checkBody('id', 'Id invalide').notEmpty().isMongoId();
 });
 
 

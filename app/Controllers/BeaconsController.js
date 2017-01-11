@@ -58,7 +58,7 @@ router.get('/existId/:id', function(req, res)
 		return;
 	}
 
-	Beacon.findOne({'id_beacon': req.params.id}, function(err, beacon)
+	Beacon.findOne({'id_beacon': req.params.id}, {id_beacon: 1, etablissement:1}, function(err, beacon)
 	{
 		if (err)
         {
@@ -70,16 +70,42 @@ router.get('/existId/:id', function(req, res)
         {
         	if(beacon)
         	{
-        		retour = true;
+        		retour = {success: true, data: beacon};
         		res.json(retour);
         	}
         	else
         	{
-        		retour = false;
+        		retour = {success: false};
         		res.status(400).json(retour); 
         	}
         	
         }
+	});
+});
+
+router.get('/byEtablissement/:id', function(req, res)
+{
+	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
+
+	if(req.validationErrors())
+	{
+		retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	Beacon.find({"etablissement.id": req.params.id}, {id_beacon: 1, _id: 0}, function(err, result)
+	{
+		if(err)
+		{
+			retour = {'error': err};
+			res.status(400).json(retour);
+			return;
+		}
+		else
+		{
+			res.json(retour);
+		}
 	});
 });
 
