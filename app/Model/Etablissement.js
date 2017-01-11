@@ -11,9 +11,16 @@ var Schema       = mongoose.Schema;
 
 var EtablissementSchema = new Schema({
 	nom:  					{type: String, required: [true, 'Nom obligatoire']},
-	adresse : 				{type: String},
+	adresse: 				{type: String},
+	pays: 					{type: String},
+	ville: 					{type: String},
+	zip: 					{type: String},
 	mail: 					{type: String, required: [true, 'Mail obligatoire']},
 	tel: 					{type: String},
+	administrateur: 		{
+		identifiant: 		{type: String},
+		password: 			{type: String}
+	},
 	intervenants: [
 		Schema({
 			nom: 			{type: String, required: [true, 'Nom de l\'intervenant requis']},
@@ -42,7 +49,7 @@ var EtablissementSchema = new Schema({
 				id: 		{type: Schema.Types.ObjectId},
 				nom: 		{type: String},
 				prenom: 	{type: String}
-			}
+			},
 			date: 			{type: Date},
 			prise: 			{type: Boolean}
 		})

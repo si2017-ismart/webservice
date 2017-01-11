@@ -26,8 +26,8 @@ app.use(function(req, res, next) {
 
 
 // Chargement des controllers
-app.use('/api/users', require('./app/Controllers/BeaconsController'));
-
+app.use('/api/beacons', require('./app/Controllers/BeaconsController'));
+app.use('/api/etablissements', require('./app/Controllers/EtablissementController'));
 
 // Lancement du serveur sur le port 3000
 app.listen(3000, function () {

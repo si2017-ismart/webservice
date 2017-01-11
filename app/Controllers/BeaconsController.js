@@ -36,6 +36,7 @@ router.get('/existId/:id', function(req, res)
 	{
 		retour = {'error': req.validationErrors()};
 		res.status(400).json(retour);
+		return;
 	}
 
 	Beacon.findOne({'_id': req.params.id}, function(err, beacon)
@@ -44,17 +45,18 @@ router.get('/existId/:id', function(req, res)
         {
         	retour = {error: err};
             res.status(400).json(retour);
+            return;
         }
         else
         {
         	if(beacon)
         	{
-        		retour = {true};
+        		retour = true;
         		res.json(retour);
         	}
         	else
         	{
-        		retour = {false};
+        		retour = false;
         		res.status(400).json(retour); 
         	}
         	
@@ -77,10 +79,11 @@ router.get('/needHelp/:id/:name/:sex/:profil', function(req, res)
 	{
 		retour = {'error': req.validationErrors()};
 		res.status(400).json(retour);
+		return;
 	}
 
 	var beacon = Beacon.findOne({'_id': req.params.id}).exec();
-	beacon.then(function(result))
+	beacon.then(function(result)
 	{
     	if(!result)
     	{

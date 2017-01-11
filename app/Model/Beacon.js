@@ -27,7 +27,7 @@ var BeaconSchema    = new Schema({
     }
 });
 
-BeaconSchema.index({ etablissement.id: 1});
+//BeaconSchema.index({ etablissement.id: 1});
  
 
 module.exports = mongoose.model('Beacon', BeaconSchema);
