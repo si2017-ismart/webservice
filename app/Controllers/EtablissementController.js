@@ -88,6 +88,30 @@ router.get('/intervenants/getByEtablissement/:id', function(req, res)
 	});
 });
 
+router.get('/intervenants/getById/:id', function(req, res)
+{
+	req.checkParams('id', 'Id de l\'etablissement invalide').notEmpty().isMongoId();
+
+	if(req.validationErrors())
+	{
+		retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	Etablissement.findOne({"intervenants._id": req.params.id}, {"intervenants.$": 1}, function(err, intervenant)
+	{
+		if(err)
+		{
+			res.status(400).json({error: err});
+		}
+		else
+		{
+			res.json(intervenant);
+		}
+	})
+});
+
 
 /**
  * Création d'un établissement
@@ -213,7 +237,7 @@ router.post('/createAdmin', function(req, res)
 	});
 });
 
-router.post('/intervenant/add', function(req, res)
+router.post('/intervenants/add', function(req, res)
 {
 	req.checkBody('id', 'Id invalide').notEmpty().isMongoId();
 	req.checkBody('nom', 'Nom invalide').notEmpty();
@@ -254,6 +278,8 @@ router.post('/intervenant/add', function(req, res)
 		}
 	});
 });
+
+
 
 
 module.exports = router;
