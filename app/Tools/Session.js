@@ -19,6 +19,7 @@ function Session()
 		alea = Math.floor((Math.random() * 1000000) + 1)
 		this.myId = sha256(this.date+alea+beacon);
 		this.session = {
+			"id": this.myId,
 			"beacon": {
 				"id": 		beacon_id,
 				"nom": 		beacon_name,

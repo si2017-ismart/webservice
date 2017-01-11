@@ -115,6 +115,48 @@ router.post('/add', function(req, res)
 	})
 });
 
+router.post('/loginAdmin', function(req, res)
+{
+	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
+	req.checkBody('password', 'Password invalide').notEmpty();
+
+
+	if(req.validationErrors())
+	{
+		var retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	Etablissement.findOne({
+		"administrateur.identifiant": 	req.body.identifiant, 
+		"administrateur.password": 		req.body.password}, function(err, result)
+		{
+			if(err)
+			{
+				var retour = {'error': req.validationErrors()};
+				res.status(400).json(retour);
+				return;
+			}
+			else
+			{
+				if(result)
+				{
+					res.status(200).json({
+						success: true,
+						id_etablissement: result._id
+					});
+				}
+				else
+				{
+					res.status(400).json({
+						success: false
+					});
+				}
+			}
+		})
+});
+
 router.post('/createAdmin', function(req, res)
 {
 	req.checkBody('id', 'Id invalide').notEmpty().isMongoId();
@@ -149,6 +191,43 @@ router.post('/createAdmin', function(req, res)
 router.post('/intervenant/add', function(req, res)
 {
 	req.checkBody('id', 'Id invalide').notEmpty().isMongoId();
+	req.checkBody('nom', 'Nom invalide').notEmpty();
+	req.checkBody('prenom', 'Prenom invalide').notEmpty();
+	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
+	req.checkBody('password', 'Password invalide').notEmpty();
+
+
+	req.sanitizeBody('nom').escape();
+	req.sanitizeBody('prenom').escape();
+	req.sanitizeBody('identifiant').escape();
+	req.sanitizeBody('password').escape();
+
+	if(req.validationErrors())
+	{
+		var retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	var inter = {
+		nom: 	req.body.nom,
+		prenom: req.body.prenom,
+		identifiant: req.body.identifiant,
+		password: req.body.password,
+		disponibilite: false
+	};
+
+	Etablissement.update({"_id": req.body.id}, {"$push": {intervenants: {"$each": [inter]} }}, function(err, result)
+	{
+		if(err)
+		{
+			res.status(400).json({error: err});
+		}
+		else
+		{
+			res.status(200).json("Intervenant créé");
+		}
+	});
 });
 
 
