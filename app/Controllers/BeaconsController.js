@@ -83,7 +83,7 @@ router.get('/existId/:id', function(req, res)
 	});
 });
 
-router.get('/byEtablissement/:id', function(req, res)
+router.get('/getByEtablissement/:id', function(req, res)
 {
 	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
 
