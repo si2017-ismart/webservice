@@ -18,11 +18,11 @@ var connection = require('../../db_mongo.js');
 var Beacon = 		require('../../app/Model/Beacon');
 var Etablissement = require('../../app/Model/Etablissement');
 
-// Chargement du Model
-// --------------------------------------------------------------
-var HelpSession = require('../../app/Tools/Session');
+// // Chargement du Model
+// // --------------------------------------------------------------
+// var HelpSession = require('../../app/Tools/Session');
 
-
+var crypto = require('crypto');
 
 router.get('/', function(req, res)
 {
@@ -76,9 +76,9 @@ router.get('/existId/:id', function(req, res)
         	else
         	{
         		retour = {success: false};
-        		res.status(400).json(retour); 
+        		res.status(400).json(retour);
         	}
-        	
+
         }
 	});
 });
@@ -86,7 +86,8 @@ router.get('/existId/:id', function(req, res)
 router.get('/getByEtablissement/:id', function(req, res)
 {
 	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
-
+  var retour = {};
+  
 	if(req.validationErrors())
 	{
 		retour = {'error': req.validationErrors()};
@@ -94,7 +95,7 @@ router.get('/getByEtablissement/:id', function(req, res)
 		return;
 	}
 
-	Beacon.find({"etablissement.id": req.params.id}, {id_beacon: 1, _id: 0}, function(err, result)
+	Beacon.find({"etablissement.id": req.params.id}, function(err, result)
 	{
 		if(err)
 		{
@@ -104,16 +105,16 @@ router.get('/getByEtablissement/:id', function(req, res)
 		}
 		else
 		{
-			res.json(retour);
+			res.json(result);
 		}
 	});
 });
 
 
 // Appeler de l'aide
-router.get('/needHelp/:id/:name/:sex/:profil', function(req, res)
+router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
 {
-	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
+	req.checkParams('id', 'Invalid id').notEmpty();
 	req.checkParams('name', 'Invalid name').notEmpty().isAlpha();
 	req.checkParams('sex', 'Invalid sex').notEmpty().isAlpha();
 	req.checkParams('profil', 'Invalid profil').notEmpty().isAlpha();
@@ -130,30 +131,76 @@ router.get('/needHelp/:id/:name/:sex/:profil', function(req, res)
 	var beacon = Beacon.findOne({'id_beacon': req.params.id}).exec();
 	beacon.then(function(result)
 	{
+    console.log('COucou beacon!');
+
     	if(!result)
     	{
     		retour = {error: "Unknown"};
     		res.status(400).json(retour);
     		return;
     	}
+      //console.log("creation session");
+    	//var session = new HelpSession.Session();
+    //  console.log("session allouée");
+    	//session.create(result.id, result.nom, result.position, result.etablissement_id, req.params.name, req.params.sex, req.params.profil);
+      var date = new Date();
+      alea = Math.floor((Math.random() * 1000000) + 1)
+      console.log("alea session"+result.id);
+      var rdm = date+alea+result.id;
+      console.log(rdm);
+      var myId = crypto.createHmac('sha256', rdm)
+                       .update('I sucks')
+                       .digest('hex')
+      ;
+      console.log("sha256 session");
+      console.log('myid'+myId);
+      var session = {
+        "id": myId,
+        "beacon": {
+          "id": 		result.id,
+          "nom": 		result.nom,
+          "position": result.position,
+        },
+        "user": {
+          "nom": 		req.params.name,
+          "sexe": 	req.params.sex,
+          "type": 	req.params.profil
+        },
+        "date": 		date,
+        "prise": 		false
+      };
 
-    	var session = new Session();
-    	session.create(result.id, result.nom, result.position, result.etablissement_id, name, sex);
 
-    	// Recherche des intervenants
-    	Etablissement.find({"_id": result.etablissement_id}, function(err, result) {
+
+      // console.log(session);
+      Etablissement.update({"_id": result.etablissement.id}, {"$push": {sessions: {"$each": [session]}}}, function(err, result)
+      {
+        console.log('Update WTF!');
+
     		if(err)
     		{
-
+          res.status(400).json({error: err});
     		}
     		else
     		{
-    			console.log("recherche des intervenants");
+          res.json(session.id);
     		}
-    	});
-	})
-	
-	
+    });
+
+    	// Recherche des intervenants
+    	// Etablissement.find({"_id": result.etablissement_id}, function(err, result) {
+    	// 	if(err)
+    	// 	{
+      //     res.status(400).json({error: err});
+    	// 	}
+    	// 	else
+    	// 	{
+    	// 		console.log("recherche des intervenants");
+    	// 	}
+    	// });
+	});
+
+
 });
 
 
