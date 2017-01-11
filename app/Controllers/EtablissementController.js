@@ -216,7 +216,7 @@ router.post('/add', function(req, res)
 		tel: 		req.body.tel
 	});
 
-	etab.save(function(err, result)
+	Etablissement.findOne({nom: req.body.nom}, function(err, result)
 	{
 		if(err)
 		{
@@ -224,10 +224,28 @@ router.post('/add', function(req, res)
 		}
 		else
 		{
-			res.status(200).json(result.id);
+			if(result)
+			{
+				res.status(400).json({error: "Etablissement already exists"});
+				return;
+			}
+
+			etab.save(function(err, result)
+			{
+				if(err)
+				{
+					res.status(400).json({error: err});
+				}
+				else
+				{
+					res.status(200).json(result.id);
+				}
+				
+			})
 		}
-		
 	})
+
+	
 });
 
 router.post('/loginAdmin', function(req, res)
@@ -290,17 +308,35 @@ router.post('/createAdmin', function(req, res)
 		password: 		req.body.password
 	};
 
-	Etablissement.update({"_id": req.body.id}, {"$set": {administrateur: admin}}, function(err, result)
+	Etablissement.findOne({"administrateur.identifiant": req.body.identifiant}, function(err, result)
 	{
 		if(err)
 		{
-			res.status(200).json({error: err});
+			res.status(400).json({error: err});
 		}
 		else
 		{
-			res.status(200).json(true);
+			if(result)
+			{
+				res.status(400).json({error: "Admin already exists"});
+				return;
+			}
+
+			Etablissement.update({"_id": req.body.id}, {"$set": {administrateur: admin}}, function(err, result)
+			{
+				if(err)
+				{
+					res.status(400).json({error: err});
+				}
+				else
+				{
+					res.status(200).json(true);
+				}
+			});
 		}
-	});
+	})
+
+	
 });
 
 router.post('/intervenants/add', function(req, res)
@@ -332,7 +368,7 @@ router.post('/intervenants/add', function(req, res)
 		disponibilite: false
 	};
 
-	Etablissement.update({"_id": req.body.id}, {"$push": {intervenants: {"$each": [inter]} }}, function(err, result)
+	Etablissement.findOne({"_id": req.body.id, "intervenants.identifiant": req.body.identifiant}, function(err, result)
 	{
 		if(err)
 		{
@@ -340,9 +376,27 @@ router.post('/intervenants/add', function(req, res)
 		}
 		else
 		{
-			res.status(200).json("Intervenant créé");
+			if(result)
+			{
+				res.status(400).json({error: "Intervenant already exists"});
+				return;
+			}
+
+			Etablissement.update({"_id": req.body.id}, {"$push": {intervenants: {"$each": [inter]} }}, function(err, result)
+			{
+				if(err)
+				{
+					res.status(400).json({error: err});
+				}
+				else
+				{
+					res.status(200).json("Intervenant créé");
+				}
+			});		
 		}
 	});
+
+	
 });
 
 
