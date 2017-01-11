@@ -31,5 +31,5 @@ app.use('/api/etablissements', require('./app/Controllers/EtablissementControlle
 
 // Lancement du serveur sur le port 3000
 app.listen(3000, function () {
-  console.log('Le serveur est en route');
+  console.log('Server is running');
 });
