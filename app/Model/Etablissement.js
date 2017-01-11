@@ -34,7 +34,7 @@ var EtablissementSchema = new Schema({
 		Schema({
 			id: 			{type: String},
 			beacon: {
-				id: 		{type: Schema.Types.ObjectId, required: [true, 'Identifiant du beacon obligatoire']},
+				id: 		{type: String, required: [true, 'Identifiant du beacon obligatoire']},
 				nom: 		{type: String},
 				position: {
 					x: 		{type: Number},
