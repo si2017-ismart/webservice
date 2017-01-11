@@ -47,7 +47,7 @@ router.get('/', function(req, res)
  **/
 router.get('/existId/:id', function(req, res)
 {
-	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
+	req.checkParams('id', 'Invalid id').notEmpty();
 	var retour = {};
 
 
