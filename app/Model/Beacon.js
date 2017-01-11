@@ -12,22 +12,21 @@ var Schema       = mongoose.Schema;
 // --------------------------------------------------------------
 
 var BeaconSchema    = new Schema({
+    id_beacon: {type: String},
     nom: {type: String, required: [true, 'Nom obligatoire']},
     portee: {type: Number},
     position: {
-        x: {type: Number, required: [true, 'Latitude obligatoire']},
-        y: {type: Number, required: [true, 'Latitude obligatoire']}
+        x: {type: Number},
+        y: {type: Number}
     },
     etablissement : {
         id: Schema.Types.ObjectId,
         nom: {type: String, required: [true, 'Nom de l\'Etablissement obligatoire']},
-        adresse: {type: String},
         mail: {type: String},
-        tel: {type: String}
     }
 });
 
-//BeaconSchema.index({ etablissement.id: 1});
+BeaconSchema.index({ id_beacon: 1});
  
 
 module.exports = mongoose.model('Beacon', BeaconSchema);
