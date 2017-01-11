@@ -112,6 +112,71 @@ router.get('/intervenants/getById/:id', function(req, res)
 	})
 });
 
+router.get('/sessions/checkToken/:token', function(req, res)
+{
+	req.checkParams('token', 'Token invalide').notEmpty();
+
+	Etablissement.findOne({"sessions.id": token}, function(err, session)
+	{
+		if(err)
+		{
+			res.status(400).json({error: err});
+		}
+		else
+		{
+			if(session)
+			{
+				res.json({success: true});	
+			}
+			else
+			{
+				res.json({success: false});	
+			}
+			
+		}
+	})
+})
+
+router.post('/sessions/setBeacon', function(req, res)
+{
+	req.checkBody('id_beacon', 'Id du beacon invalide').notEmpty();
+	req.checkBody('token', 'Token invalide').notEmpty();
+
+	Beacon.findOne({"_id": req.body.id_beacon}, function(err, beacon)
+	{
+		if(err)
+		{
+			res.status(400).json({error: err});
+		}
+		else
+		{
+			if(beacon)
+			{
+				Etablissement.update({"sessions.id": token}, {"$set": {
+					"sessions.$.beacon.id": beacon.id, 
+					"sessions.$.beacon.nom": beacon.nom,
+					"sessions.$.beacon.position": beacon.position
+				}}, function(err, result)
+				{
+					if(err)
+					{
+						res.status(400).json({error: err});
+					}
+					else
+					{
+						res.json({success: true});
+					}
+				})
+			}
+			else
+			{
+				res.status(400).json({error: "Beacon unknown"});
+			}
+		}
+	})
+	
+});
+
 
 /**
  * Création d'un établissement
