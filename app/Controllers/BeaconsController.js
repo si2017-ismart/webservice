@@ -86,8 +86,10 @@ router.get('/existId/:id', function(req, res)
 router.get('/getByEtablissement/:id', function(req, res)
 {
 	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
+
   var retour = {};
   
+
 	if(req.validationErrors())
 	{
 		retour = {'error': req.validationErrors()};
@@ -177,6 +179,7 @@ router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
       {
         console.log('Update WTF!');
 
+
     		if(err)
     		{
           res.status(400).json({error: err});
@@ -199,7 +202,6 @@ router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
     	// 	}
     	// });
 	});
-
 
 });
 
