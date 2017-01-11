@@ -32,6 +32,7 @@ var EtablissementSchema = new Schema({
 	],
 	sessions: [
 		Schema({
+			id: 			{type: String},
 			beacon: {
 				id: 		{type: Schema.Types.ObjectId, required: [true, 'Identifiant du beacon obligatoire']},
 				nom: 		{type: String},
@@ -52,7 +53,7 @@ var EtablissementSchema = new Schema({
 			},
 			date: 			{type: Date},
 			prise: 			{type: Boolean}
-		})
+		}, {_id: false})
 	]
 }, {strict : false});
  

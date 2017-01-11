@@ -23,7 +23,7 @@ var Etablissement = require('../../app/Model/Etablissement');
 
 
 /**
- *	@brief 		Récupère un Beacon via son Id
+ *	@brief 		Récupère un Etablissement via son Id
  *	@param 		id : ObjectId de l'utilisateur
  **/
 router.get('/getById/:id', function(req, res)
@@ -105,7 +105,7 @@ router.post('/add', function(req, res)
 	{
 		if(err)
 		{
-			res.status(200).json({error: err});
+			res.status(400).json({error: err});
 		}
 		else
 		{
