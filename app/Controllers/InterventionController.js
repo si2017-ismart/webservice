@@ -135,6 +135,8 @@ router.post('/satisfaction', function(req, res)
 	req.checkBody('token', 'Token invalide').notEmpty();
 	req.checkBody('satisfaction', 'Satisfaction invalide').notEmpty().isInt();
 
+
+
 	if(req.validationErrors())
 	{
 		var retour = {'error': req.validationErrors()};
@@ -142,7 +144,9 @@ router.post('/satisfaction', function(req, res)
 		return;
 	}
 
-	var promise = Intervention.update({tokenUsed: req.body.token}, {"$set": {satisfaction: req.body.satisfaction}}).exec();
+	var token = req.body.token.trim();
+
+	var promise = Intervention.update({tokenUsed: token}, {"$set": {satisfaction: req.body.satisfaction}}).exec();
 	promise.then(function(update)
 	{
 		res.json('Satisfaction saved');

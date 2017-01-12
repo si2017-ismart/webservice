@@ -153,7 +153,7 @@ token			: Token de la session
 
 Ajout de la satisfaction du user au log de sa session
 ```
->'url':3000/api/interventions/satasfaction
+>'url':3000/api/interventions/satisfaction
 
 token			: Token de la session
 satisfaction 	: Satisfaction du user : entier
