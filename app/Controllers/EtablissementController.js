@@ -305,7 +305,7 @@ router.post('/intervenants/login', function(req, res)
 	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
 	req.checkBody('password', 'Password invalide').notEmpty();
 
-	/eq.sanitizeBody('identifiant').escape();
+	req.sanitizeBody('identifiant').escape();
 	req.sanitizeBody('password').escape();
 	req.sanitizeBody('nom_etablissement').escape();
 
@@ -328,14 +328,13 @@ router.post('/intervenants/login', function(req, res)
 
 	promise.then(function(etablissement)
 	{
-    console.log(etablissement);
 		if(etablissement)
 		{
-			res.json(true);
+			res.json(etablissement._id);
 		}
 		else
 		{
-			res.status(400).json(req.body);
+			res.status(400).json(false);
 		}
 	})
 	.catch(function(err)
