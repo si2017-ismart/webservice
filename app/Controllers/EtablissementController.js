@@ -316,6 +316,10 @@ router.post('/intervenants/login', function(req, res)
 		return;
 	}
 
+	console.log(req.body.nom_etablissement);
+	console.log(req.body.identifiant);
+	console.log(req.body.password);
+
 	var promise = Etablissement.findOne({
 		"intervenants.identifiant": req.body.identifiant,
 		"intervenants.password": req.body.password,
