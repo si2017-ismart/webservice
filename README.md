@@ -4,9 +4,21 @@
 #### GET
 Liste de tous les beacons
 >'url':3000/api/beacons
+
 Vérifie l'existance d'un beacon et renvoie l'établissement qui le possède
 >'url':3000/api/beacons/existId/:id_beacon
 
+Liste de tous les beacons
+>'url':3000/api/beacons
+
+Liste de tous les beacons
+>'url':3000/api/beacons
+
+Liste de tous les beacons
+>'url':3000/api/beacons
+
+Liste de tous les beacons
+>'url':3000/api/beacons
 
 # Docker
 You will be able to run the webservice with mongodb
