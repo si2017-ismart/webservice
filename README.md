@@ -3,9 +3,9 @@
 ### Beacons
 #### GET
 Liste de tous les beacons
-`'url':3000/api/beacons`
+>'url':3000/api/beacons
 Vérifie l'existance d'un beacon et renvoie l'établissement qui le possède
-`'url':3000/api/beacons/existId/:id_beacon`
+>'url':3000/api/beacons/existId/:id_beacon
 
 
 # Docker
