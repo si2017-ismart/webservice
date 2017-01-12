@@ -237,7 +237,7 @@ router.post('/add', function(req, res)
 						}
 					});
 
-					
+
 
 					beacon.save(function(err, result)
 					{
