@@ -88,7 +88,6 @@ router.get('/getByEtablissement/:id', function(req, res)
 	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
 
   var retour = {};
-
 	if(req.validationErrors())
 	{
 		retour = {'error': req.validationErrors()};
@@ -132,63 +131,48 @@ router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
 	var beacon = Beacon.findOne({'id_beacon': req.params.id}).exec();
 	beacon.then(function(result)
 	{
-    console.log('COucou beacon!');
-
     	if(!result)
     	{
     		retour = {error: "Unknown"};
     		res.status(400).json(retour);
     		return;
     	}
-      //console.log("creation session");
-    	//var session = new HelpSession.Session();
-    //  console.log("session allouée");
-    	//session.create(result.id, result.nom, result.position, result.etablissement_id, req.params.name, req.params.sex, req.params.profil);
-      var date = new Date();
-      alea = Math.floor((Math.random() * 1000000) + 1)
-      console.log("alea session"+result.id);
-      var rdm = date+alea+result.id;
-      console.log(rdm);
-      var myId = crypto.createHmac('sha256', rdm)
-                       .update('I sucks')
-                       .digest('hex')
-      ;
-      console.log("sha256 session");
-      console.log('myid'+myId);
-      var session = {
-        "id": myId,
-        "beacon": {
-          "id": 		result.id,
-          "nom": 		result.nom,
-          "position": result.position,
-        },
-        "user": {
-          "nom": 		req.params.name,
-          "sexe": 	req.params.sex,
-          "type": 	req.params.profil
-        },
-        "date": 		date,
-        "prise": 		false
-      };
 
+    	var date = new Date();
+    	alea = Math.floor((Math.random() * 1000000) + 1)
+    	var rdm = date+alea+result.id;
+    	var myId = crypto.createHmac('sha256', rdm)
+                     .update('PiouPiouPiou')
+                     .digest('hex')
+    	;
+    	var session = {
+      	"id": myId,
+      	"beacon": {
+        		"id": 		result.id_beacon,
+        		"nom": 		result.nom,
+        		"position": result.position,
+      	},
+      	"user": {
+        		"nom": 		req.params.name,
+        		"sexe": 	req.params.sex,
+        		"type": 	req.params.profil
+      	},
+      	"date": 		date,
+      	"prise": 		false
+    	};
 
-
-      // console.log(session);
       Etablissement.update({"_id": result.etablissement.id}, {"$push": {sessions: {"$each": [session]}}}, function(err, result)
       {
-        console.log('Update WTF!');
-
-
-    		if(err)
-    		{
-          res.status(400).json({error: err});
-    		}
-    		else
-    		{
-          res.json(session.id);
-    		}
-    });
-	});
+  		if(err)
+  		{
+        		res.status(400).json({error: err});
+  		}
+  		else
+  		{
+        		res.json(session.id);
+  		}
+  	});
+  });
 });
 
 
@@ -198,6 +182,10 @@ router.post('/add', function(req, res)
 	req.checkBody('id', 'Id Beacon invalide').notEmpty();
 	req.checkBody('nom', 'Nom Beacon invalide').notEmpty();
 
+	req.checkBody('xPosition', 'Position X invalide').notEmpty().isInt();
+	req.checkBody('yPosition', 'Position Y invalide').notEmpty().isInt();
+	req.checkBody('porte', 'Porte théorique invalide').notEmpty().isInt();
+
 	if(req.validationErrors())
 	{
 		retour = {'error': req.validationErrors()};
@@ -205,7 +193,8 @@ router.post('/add', function(req, res)
 		return;
 	}
 
-	Etablissement.findOne({"_id": req.body.id_etablissement}, function(err, result)
+
+	Beacon.findOne({"id_beacon": req.body.id}, function(err, beacon)
 	{
 		if(err)
 		{
@@ -213,17 +202,13 @@ router.post('/add', function(req, res)
 		}
 		else
 		{
-			beacon = new Beacon({
-				id_beacon: req.body.id,
-				nom: req.body.nom,
-				etablissement: {
-					nom: result.nom,
-					id: result.id,
-					mail: result.mail
-				}
-			});
+			if(beacon)
+			{
+				res.status(400).json({error: "Beacon already exists"});
+				return;
+			}
 
-			beacon.save(function(err, result)
+			Etablissement.findOne({"_id": req.body.id_etablissement}, function(err, result)
 			{
 				if(err)
 				{
@@ -231,11 +216,43 @@ router.post('/add', function(req, res)
 				}
 				else
 				{
-					res.json("Beacon créé");
+					if(!result)
+					{
+						res.status(400).json({error: "Etablissement unknown"});
+						return;
+					}
+
+					beacon = new Beacon({
+						id_beacon: req.body.id,
+						nom: req.body.nom,
+						porte: req.body.porte,
+						position: {
+							x: req.body.xPosition,
+							y: req.body.yposition
+						},
+						etablissement: {
+							nom: result.nom,
+							id: result.id,
+							mail: result.mail
+						}
+					});
+
+					beacon.save(function(err, result)
+					{
+						if(err)
+						{
+							res.status(400).json({error: err});
+						}
+						else
+						{
+							res.json("Beacon créé");
+						}
+					});
 				}
 			});
 		}
-	});
+	})
+
 });
 
 // Je les previens du besoin d'aide
