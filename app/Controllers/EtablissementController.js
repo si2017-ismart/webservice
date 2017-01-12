@@ -150,7 +150,9 @@ router.get('/sessions/checkToken/:token', function(req, res)
 {
 	req.checkParams('token', 'Token invalide').notEmpty();
 
-	Etablissement.findOne({"sessions.id": req.params.token}, function(err, session)
+	var token = req.params.token.trim();
+
+	Etablissement.findOne({"sessions.id": token}, function(err, session)
 	{
 		if(err)
 		{
@@ -178,7 +180,9 @@ router.get('/sessions/getByToken/:token', function(req, res)
 {
 	req.checkParams('token', 'Token invalide').notEmpty();
 
-	Etablissement.findOne({"sessions.id": req.params.token}, {"sessions.$": 1, "_id": 0}, function(err, session)
+	var token = req.params.token.trim();
+
+	Etablissement.findOne({"sessions.id": token}, {"sessions.$": 1, "_id": 0}, function(err, session)
 	{
 		if(err)
 		{
@@ -196,6 +200,8 @@ router.post('/sessions/setBeacon', function(req, res)
 	req.checkBody('id_beacon', 'Id du beacon invalide').notEmpty();
 	req.checkBody('token', 'Token invalide').notEmpty();
 
+	var token = req.params.token.trim();
+
 	Beacon.findOne({"id_beacon": req.body.id_beacon}, function(err, beacon)
 	{
 		if(err)
@@ -206,7 +212,7 @@ router.post('/sessions/setBeacon', function(req, res)
 		{
 			if(beacon)
 			{
-				Etablissement.update({"sessions.id": req.body.token}, {"$set": {
+				Etablissement.update({"sessions.id": token}, {"$set": {
 					"sessions.$.beacon.id": beacon.id_beacon,
 					"sessions.$.beacon.nom": beacon.nom,
 					"sessions.$.beacon.position": beacon.position
