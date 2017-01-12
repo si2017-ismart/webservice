@@ -58,7 +58,7 @@ router.get('/existId/:id', function(req, res)
 		return;
 	}
 
-	Beacon.findOne({'id_beacon': req.params.id}, {id_beacon: 1, etablissement:1}, function(err, beacon)
+	Beacon.findOne({'id_beacon': req.params.id}, {id_beacon: 1, etablissement:1, "_id": 0}, function(err, beacon)
 	{
 		if (err)
         {
@@ -184,7 +184,7 @@ router.post('/add', function(req, res)
 
 	req.checkBody('xPosition', 'Position X invalide').notEmpty().isInt();
 	req.checkBody('yPosition', 'Position Y invalide').notEmpty().isInt();
-	req.checkBody('porte', 'Porte théorique invalide').notEmpty().isInt();
+	req.checkBody('portee', 'Portee théorique invalide').notEmpty().isInt();
 
 	if(req.validationErrors())
 	{
@@ -225,10 +225,10 @@ router.post('/add', function(req, res)
 					beacon = new Beacon({
 						id_beacon: req.body.id,
 						nom: req.body.nom,
-						porte: req.body.porte,
+						portee: req.body.portee,
 						position: {
 							x: req.body.xPosition,
-							y: req.body.yposition
+							y: req.body.yPosition
 						},
 						etablissement: {
 							nom: result.nom,

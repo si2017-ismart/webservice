@@ -63,6 +63,40 @@ router.get('/getById/:id', function(req, res)
 	});
 });
 
+router.get('/getByName/:name', function(req, res)
+{
+	req.checkParams('name', 'Nom invalide').notEmpty();
+
+	if(req.validationErrors())
+	{
+		retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	Etablissement.findOne({'nom': req.params.name}, function(err, etablissement)
+	{
+		if (err)
+        {
+        	retour = {error: err};
+            res.status(400).json(retour);
+        }
+        else
+        {
+        	if(etablissement)
+        	{
+        		res.json(etablissement);
+        	}
+        	else
+        	{
+        		retour = false;
+        		res.status(400).json(retour);
+        	}
+
+        }
+	});
+});
+
 
 router.get('/intervenants/getByEtablissement/:id', function(req, res)
 {
@@ -243,14 +277,55 @@ router.post('/add', function(req, res)
 			})
 		}
 	})
-
-
 });
+
+router.post('/intervenants/login', function(req, res)
+{
+	req.checkBody('nom_etablissement', 'Nom de l\'etablissement invalide').notEmpty();
+	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
+	req.checkBody('password', 'Password invalide').notEmpty();
+
+	req.sanitizeBody('identifiant').escape();
+	req.sanitizeBody('password').escape();
+	req.sanitizeBody('nom_etablissement').escape();
+
+	if(req.validationErrors())
+	{
+		var retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	var promise = Etablissement.findOne({
+		"intervenants.identifiant": req.body.identifiant,
+		"intervenants.password": req.body.password,
+		"nom": req.body.nom_etablissement
+	}).exec();
+
+	promise.then(function(etablissement)
+	{
+		if(etablissement)
+		{
+			res.json(true);
+		}
+		else
+		{
+			res.status(400).json(false);	
+		}
+	})
+	.catch(function(err)
+	{
+		res.status(400).json({error: err});
+	})
+})
 
 router.post('/loginAdmin', function(req, res)
 {
 	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
 	req.checkBody('password', 'Password invalide').notEmpty();
+
+	req.sanitizeBody('identifiant').escape();
+	req.sanitizeBody('password').escape();
 
 
 	if(req.validationErrors())
@@ -442,7 +517,10 @@ router.post('/intervenants/takeSession', function(req, res)
 		{
 			return Etablissement.findOne({"intervenants._id": req.body.id_intervenant}, {"intervenants.$": 1});
 		}
-		return;
+		else
+		{
+			throw new Error("No Session");
+		}
 	})
 	.then(function(etablissementIntervenant)
 	{
@@ -455,7 +533,10 @@ router.post('/intervenants/takeSession', function(req, res)
 			};
 			return Etablissement.update({"sessions.id": req.body.token}, {"$set": {"sessions.$.intervenant": inter, "sessions.$.prise": true}});
 		}
-		return;
+		else
+		{
+			throw new Error("No Intervenant");
+		}
 	})
 	.then(function(update)
 	{
@@ -467,9 +548,41 @@ router.post('/intervenants/takeSession', function(req, res)
 			}
 			else
 			{
-				res.json(true);
+				res.json(req.body.token);
 			}
 		})
+	})
+	.catch(function(err)
+	{
+		res.status(400).json({error: err});
+	});
+});
+
+router.post('/intervenants/endSession', function(req, res)
+{
+	req.checkBody('token', 'Token invalide').notEmpty();
+
+	if(req.validationErrors())
+	{
+		var retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+
+	var promise = Etablissement.findOne({"sessions.id": req.body.token}, {"sessions.$": 1}).exec();
+	promise.then(function(session)
+	{
+		// Récupérer l'id de l'intervenant et mettre sa disponibilité à true
+		return Etablissement.update({"intervenants._id": session.sessions[0].intervenant.id}, {"$set": {"intervenants.$.disponibilite": true}});
+	})
+	.then(function(update)
+	{
+		return Etablissement.update({"sessions.id": req.body.token}, {"$pull": {sessions: {id: req.body.token}}});
+	})
+	.then(function(update)
+	{
+		res.status(200).json(true);
 	})
 	.catch(function(err)
 	{
