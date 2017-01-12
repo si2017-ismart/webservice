@@ -21,13 +21,22 @@ var InterventionSchema   = new Schema({
         id: {type: String},
         nom: {type: String}
     },
-    satisfaction: {type: Boolean},
+    satisfaction: {type: Number},
     user: {
         sexe: {type: String},
         type: {type: String}
-    }
+    },
+    tokenUsed: {type: String},
+    beacon: {
+        id: {type: String},
+        nom: {type: String},
+        position: {
+            x: {type: Number},
+            y: {type: Number}
+        }
+    } 
 }, {strict : false});
 
-InterventionSchema.index({date: 1});
+InterventionSchema.index({date: 1, tokenUsed: 1});
 
 module.exports = mongoose.model('Intervention', InterventionSchema);
