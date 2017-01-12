@@ -18,7 +18,7 @@ var InterventionSchema   = new Schema({
         prenom : {type: String}
     },
     etablissement: {
-        id: {type: String},
+        id: Schema.Types.ObjectId,
         nom: {type: String}
     },
     satisfaction: {type: Number},
