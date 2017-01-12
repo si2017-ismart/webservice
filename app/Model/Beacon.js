@@ -23,7 +23,8 @@ var BeaconSchema    = new Schema({
         id: Schema.Types.ObjectId,
         nom: {type: String, required: [true, 'Nom de l\'Etablissement obligatoire']},
         mail: {type: String},
-    }
+    },
+    camera_url: {type: String}
 });
 
 BeaconSchema.index({ id_beacon: 1});

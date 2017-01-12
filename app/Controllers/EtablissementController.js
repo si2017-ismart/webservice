@@ -168,8 +168,28 @@ router.get('/sessions/checkToken/:token', function(req, res)
 			}
 
 		}
-	})
+	});
 })
+
+/**
+ * 
+ */
+router.get('/sessions/getByToken/:token', function(req, res)
+{
+	req.checkParams('token', 'Token invalide').notEmpty();
+
+	Etablissement.findOne({"sessions.id": req.params.token}, {"sessions.$": 1, "_id": 0}, function(err, session)
+	{
+		if(err)
+		{
+			res.status(400).json({error: err});
+		}
+		else
+		{
+			res.json(session);
+		}
+	});
+});
 
 router.post('/sessions/setBeacon', function(req, res)
 {
