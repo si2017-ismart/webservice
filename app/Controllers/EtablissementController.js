@@ -330,7 +330,7 @@ router.post('/intervenants/login', function(req, res)
 		}
 		else
 		{
-			res.status(400).json(false);	
+			res.status(400).json(req.body);	
 		}
 	})
 	.catch(function(err)
