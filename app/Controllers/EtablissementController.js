@@ -510,7 +510,7 @@ router.get('/operator_ack/:id_etablissement', function(req, res)
 
   var id_etablissement = req.params.id_etablissement.trim();
 
-  Etablissement.findOne({"_id": req.params.id_etablissement, "sessions.prise":false},{"sessions.$":1}, function(err, result) {
+  Etablissement.findOne({"_id": id_etablissement, "sessions.prise":false},{"sessions.$":1}, function(err, result) {
     if(err)
     {
       res.status(400).json({error: err});
