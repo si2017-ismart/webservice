@@ -40,7 +40,7 @@ router.get('/getById/:id', function(req, res)
 		return;
 	}
 
-	Etablissement.findOne({'_id': req.params.id}, function(err, beacon)
+	Etablissement.findOne({'_id': req.params.id}, function(err, etablissement)
 	{
 		if (err)
         {
@@ -49,10 +49,9 @@ router.get('/getById/:id', function(req, res)
         }
         else
         {
-        	if(beacon)
+        	if(etablissement)
         	{
-        		retour = true;
-        		res.json(retour);
+        		res.json(etablissement);
         	}
         	else
         	{
