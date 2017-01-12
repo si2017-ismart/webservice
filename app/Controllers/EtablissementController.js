@@ -440,7 +440,7 @@ router.post('/intervenants/takeSession', function(req, res)
 	{
 		if(etablissementSession)
 		{
-			return Etablissement.findOne({"intervenants._id": req.body.id_intervenant});
+			return Etablissement.findOne({"intervenants._id": req.body.id_intervenant}, {"intervenants.$": 1});
 		}
 		return;
 	})
@@ -448,14 +448,32 @@ router.post('/intervenants/takeSession', function(req, res)
 	{
 		if(etablissementIntervenant)
 		{
-			
-			return Etablissement.findOne({"intervenants._id": req.body.id_intervenant});
+			var inter = {
+				id: 	etablissementIntervenant.intervenants[0].id,
+				nom: 	etablissementIntervenant.intervenants[0].nom,
+				prenom: etablissementIntervenant.intervenants[0].prenom,
+			};
+			return Etablissement.update({"sessions.id": req.body.token}, {"$set": {"sessions.$.intervenant": inter, "sessions.$.prise": true}});
 		}
 		return;
 	})
+	.then(function(update)
+	{
+		Etablissement.update({"intervenants._id": req.body.id_intervenant}, {"$set": {"intervenants.$.disponibilite": false}}, function(err, result)
+		{
+			if(err)
+			{
+				res.status(400).json({error: err});
+			}
+			else
+			{
+				res.json(true);
+			}
+		})
+	})
 	.catch(function(err)
 	{
-
+		res.status(400).json({error: err});
 	});
 });
 
