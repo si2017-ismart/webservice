@@ -330,13 +330,16 @@ router.post('/intervenants/login', function(req, res)
     "$and": [{"intervenants.identifiant": identifiant.trim()},
              {"intervenants.password": password.trim()}],
 		"nom": nom_etablissement.trim()
-	}).exec();
+	}, {"intervenants.$": 1}).exec();
 
 	promise.then(function(etablissement)
 	{
 		if(etablissement)
 		{
-			res.json(etablissement._id);
+			res.json({
+				id_etablissement: 	etablissement._id,
+				id_intervenant: 	etablissement.intervenants[0]._id
+			});
 		}
 		else
 		{
