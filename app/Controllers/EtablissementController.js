@@ -172,7 +172,7 @@ router.get('/sessions/checkToken/:token', function(req, res)
 })
 
 /**
- * 
+ *
  */
 router.get('/sessions/getByToken/:token', function(req, res)
 {
@@ -305,7 +305,7 @@ router.post('/intervenants/login', function(req, res)
 	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
 	req.checkBody('password', 'Password invalide').notEmpty();
 
-	req.sanitizeBody('identifiant').escape();
+	/eq.sanitizeBody('identifiant').escape();
 	req.sanitizeBody('password').escape();
 	req.sanitizeBody('nom_etablissement').escape();
 
@@ -316,25 +316,26 @@ router.post('/intervenants/login', function(req, res)
 		return;
 	}
 
-	console.log(req.body.nom_etablissement);
-	console.log(req.body.identifiant);
-	console.log(req.body.password);
+  var identifiant = req.body.identifiant + "";
+  var nom_etablissement = req.body.nom_etablissement + "";
+  var password = req.body.password + "";
 
 	var promise = Etablissement.findOne({
-		"intervenants.identifiant": req.body.identifiant,
-		"intervenants.password": req.body.password,
-		"nom": req.body.nom_etablissement
+    "$and": [{"intervenants.identifiant": identifiant.trim()},
+             {"intervenants.password": password.trim()}],
+		"nom": nom_etablissement.trim()
 	}).exec();
 
 	promise.then(function(etablissement)
 	{
+    console.log(etablissement);
 		if(etablissement)
 		{
 			res.json(true);
 		}
 		else
 		{
-			res.status(400).json(req.body);	
+			res.status(400).json(req.body);
 		}
 	})
 	.catch(function(err)
