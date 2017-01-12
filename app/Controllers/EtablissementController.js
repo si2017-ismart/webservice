@@ -126,11 +126,11 @@ router.get('/sessions/checkToken/:token', function(req, res)
 		{
 			if(session)
 			{
-				res.json({success: true});
+				res.json(true);
 			}
 			else
 			{
-				res.json({success: false});
+				res.json(false);
 			}
 
 		}
@@ -398,8 +398,7 @@ router.post('/intervenants/add', function(req, res)
 
 });
 
-// Je cherche les intervenants de l'organisation du token
-// Recherche des intervenants
+// Recherche si une session sans intervenant existe
 router.get('/operator_ack/:id_etablissement', function(req, res)
 {
   req.checkParams('id_etablissement', 'id_etablissement missing').notEmpty().isMongoId();
@@ -420,6 +419,44 @@ router.get('/operator_ack/:id_etablissement', function(req, res)
       }
     }
   });
+});
+
+
+
+router.post('/intervenants/takeSession', function(req, res)
+{
+	req.checkBody('id_intervenant', 'Id de l\'intervenant invalide').notEmpty().isMongoId();
+	req.checkBody('token', 'Token invalide').notEmpty();
+
+	if(req.validationErrors())
+	{
+		var retour = {'error': req.validationErrors()};
+		res.status(400).json(retour);
+		return;
+	}
+
+	var promise = Etablissement.findOne({"sessions.id": req.body.token}).exec();
+	promise.then(function(etablissementSession)
+	{
+		if(etablissementSession)
+		{
+			return Etablissement.findOne({"intervenants._id": req.body.id_intervenant});
+		}
+		return;
+	})
+	.then(function(etablissementIntervenant)
+	{
+		if(etablissementIntervenant)
+		{
+			
+			return Etablissement.findOne({"intervenants._id": req.body.id_intervenant});
+		}
+		return;
+	})
+	.catch(function(err)
+	{
+
+	});
 });
 
 
