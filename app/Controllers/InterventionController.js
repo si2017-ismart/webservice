@@ -115,7 +115,8 @@ router.post('/add', function(req, res)
 					x: session.sessions[0].beacon.position.x,
 					y: session.sessions[0].beacon.position.y
 				}
-			}
+			},
+			satisfaction: 5
 		});
 
 		return intervention.save();
@@ -149,6 +150,7 @@ router.post('/satisfaction', function(req, res)
 	var promise = Intervention.update({tokenUsed: token}, {"$set": {satisfaction: req.body.satisfaction}}).exec();
 	promise.then(function(update)
 	{
+		console.log(update);
 		res.json('Satisfaction saved');
 	})
 	.catch(function(err)

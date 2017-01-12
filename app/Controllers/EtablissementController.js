@@ -604,8 +604,10 @@ router.post('/intervenants/endSession', function(req, res)
 		return;
 	}
 
+	var token = req.body.token.trim();
 
-	var promise = Etablissement.findOne({"sessions.id": req.body.token}, {"sessions.$": 1}).exec();
+
+	var promise = Etablissement.findOne({"sessions.id": token}, {"sessions.$": 1}).exec();
 	promise.then(function(session)
 	{
 		// Récupérer l'id de l'intervenant et mettre sa disponibilité à true
@@ -613,7 +615,7 @@ router.post('/intervenants/endSession', function(req, res)
 	})
 	.then(function(update)
 	{
-		return Etablissement.update({"sessions.id": req.body.token}, {"$pull": {sessions: {id: req.body.token}}});
+		return Etablissement.update({"sessions.id": token}, {"$pull": {sessions: {id: token}}});
 	})
 	.then(function(update)
 	{
