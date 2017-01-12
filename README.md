@@ -17,13 +17,16 @@ Demande un jeton d'aide pour le client ()
 #### POST
 
 Liste de tous les beacons
->'url':3000/api/beacons/add
-> id_etablissement	: id de l'etablissement
-> id				: id du beacon
-> nom				: nom du beacon
-> xPosition			: position X locale du beacon
-> yPosition			: position Y locale du beacon
-> portee			: portée théorique du beacon
+```
+'url':3000/api/beacons/add
+
+ id_etablissement	: id de l'etablissement
+ id				: id du beacon
+ nom				: nom du beacon
+ xPosition			: position X locale du beacon
+ yPosition			: position Y locale du beacon
+ portee			: portée théorique du beacon
+ ```
 
 
 # Docker
