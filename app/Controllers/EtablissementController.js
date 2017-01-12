@@ -56,9 +56,9 @@ router.get('/getById/:id', function(req, res)
         	else
         	{
         		retour = false;
-        		res.status(400).json(retour); 
+        		res.status(400).json(retour);
         	}
-        	
+
         }
 	});
 });
@@ -126,13 +126,13 @@ router.get('/sessions/checkToken/:token', function(req, res)
 		{
 			if(session)
 			{
-				res.json({success: true});	
+				res.json({success: true});
 			}
 			else
 			{
-				res.json({success: false});	
+				res.json({success: false});
 			}
-			
+
 		}
 	})
 })
@@ -153,7 +153,7 @@ router.post('/sessions/setBeacon', function(req, res)
 			if(beacon)
 			{
 				Etablissement.update({"sessions.id": req.body.token}, {"$set": {
-					"sessions.$.beacon.id": beacon.id_beacon, 
+					"sessions.$.beacon.id": beacon.id_beacon,
 					"sessions.$.beacon.nom": beacon.nom,
 					"sessions.$.beacon.position": beacon.position
 				}}, function(err, result)
@@ -174,7 +174,7 @@ router.post('/sessions/setBeacon', function(req, res)
 			}
 		}
 	})
-	
+
 });
 
 
@@ -239,12 +239,12 @@ router.post('/add', function(req, res)
 				{
 					res.status(200).json(result.id);
 				}
-				
+
 			})
 		}
 	})
 
-	
+
 });
 
 router.post('/loginAdmin', function(req, res)
@@ -261,7 +261,7 @@ router.post('/loginAdmin', function(req, res)
 	}
 
 	Etablissement.findOne({
-		"administrateur.identifiant": 	req.body.identifiant, 
+		"administrateur.identifiant": 	req.body.identifiant,
 		"administrateur.password": 		req.body.password}, function(err, result)
 		{
 			if(err)
@@ -335,7 +335,7 @@ router.post('/createAdmin', function(req, res)
 		}
 	})
 
-	
+
 });
 
 router.post('/intervenants/add', function(req, res)
@@ -391,14 +391,36 @@ router.post('/intervenants/add', function(req, res)
 				{
 					res.status(200).json("Intervenant créé");
 				}
-			});		
+			});
 		}
 	});
 
-	
+
 });
 
+// Je cherche les intervenants de l'organisation du token
+// Recherche des intervenants
+router.get('/operator_ack/:id_etablissement', function(req, res)
+{
+  req.checkParams('id_etablissement', 'id_etablissement missing').notEmpty().isMongoId();
 
+  Etablissement.findOne({"_id": req.params.id_etablissement, "sessions.prise":false},{"sessions.$":1}, function(err, result) {
+    if(err)
+    {
+      res.status(400).json({error: err});
+    }
+    else
+    {
+      if(result)
+      {
+        res.json(result);
+      }
+      else{
+        res.json('Nothing');
+      }
+    }
+  });
+});
 
 
 module.exports = router;

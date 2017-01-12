@@ -88,7 +88,6 @@ router.get('/getByEtablissement/:id', function(req, res)
 	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
 
   var retour = {};
-  
 
 	if(req.validationErrors())
 	{
@@ -189,20 +188,7 @@ router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
           res.json(session.id);
     		}
     });
-
-    	// Recherche des intervenants
-    	// Etablissement.find({"_id": result.etablissement_id}, function(err, result) {
-    	// 	if(err)
-    	// 	{
-      //     res.status(400).json({error: err});
-    	// 	}
-    	// 	else
-    	// 	{
-    	// 		console.log("recherche des intervenants");
-    	// 	}
-    	// });
 	});
-
 });
 
 
@@ -251,9 +237,6 @@ router.post('/add', function(req, res)
 		}
 	});
 });
-
-
-// Je cherche les intervenants de l'organisation du token
 
 // Je les previens du besoin d'aide
 
