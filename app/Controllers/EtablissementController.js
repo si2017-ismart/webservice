@@ -508,6 +508,8 @@ router.get('/operator_ack/:id_etablissement', function(req, res)
 {
   req.checkParams('id_etablissement', 'id_etablissement missing').notEmpty().isMongoId();
 
+  var id_etablissement = req.params.id_etablissement.trim();
+
   Etablissement.findOne({"_id": req.params.id_etablissement, "sessions.prise":false},{"sessions.$":1}, function(err, result) {
     if(err)
     {
