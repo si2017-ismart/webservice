@@ -1,4 +1,3 @@
-// app/model/users.js
 
 // Chargement des dépendances
 // --------------------------------------------------------------

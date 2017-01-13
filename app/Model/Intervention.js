@@ -1,6 +1,4 @@
 
-// app/model/users.js
-
 // Chargement des dépendances
 // --------------------------------------------------------------
 var mongoose     = require('mongoose');
