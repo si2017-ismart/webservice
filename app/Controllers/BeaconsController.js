@@ -18,12 +18,14 @@ var connection = require('../../db_mongo.js');
 var Beacon = 		require('../../app/Model/Beacon');
 var Etablissement = require('../../app/Model/Etablissement');
 
-// // Chargement du Model
-// // --------------------------------------------------------------
-// var HelpSession = require('../../app/Tools/Session');
 
 var crypto = require('crypto');
 
+
+/**
+ * Récupération de tous les beacons
+ * @return  JSON : Liste des beacons
+ */
 router.get('/', function(req, res)
 {
 	Beacon.find({}, {"id_beacon": 1, "_id": 0}, function(err, result)
@@ -43,7 +45,8 @@ router.get('/', function(req, res)
 
 /**
  *	@brief 		Récupère un Beacon via son Id
- *	@param 		id : ObjectId de l'utilisateur
+ *	@param 		id : Id du beacon
+ *	@return 	JSON : beacon ou false
  **/
 router.get('/existId/:id', function(req, res)
 {
@@ -83,6 +86,11 @@ router.get('/existId/:id', function(req, res)
 	});
 });
 
+/**
+ * Récupération des beacons d'un établissement
+ * @param  	id : ID de l'établissement
+ * @return 	JSON : Liste des beacons ou err
+ */
 router.get('/getByEtablissement/:id', function(req, res)
 {
 	req.checkParams('id', 'Invalid id').notEmpty().isMongoId();
@@ -111,7 +119,14 @@ router.get('/getByEtablissement/:id', function(req, res)
 });
 
 
-// Appeler de l'aide
+/**
+ * Démarre une session d'aide pour l'utilisateur
+ * @param  	id : ID du beacon
+ * @param  	name : Nom de la personne
+ * @param 	sex : Sexe de la personne
+ * @profil 	profil: type de handicap
+ * @return  JSON : ID de la session
+ */
 router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
 {
 	req.checkParams('id', 'Invalid id').notEmpty();
@@ -175,7 +190,13 @@ router.get('/needHelp/:profil/:name/:sex/:id', function(req, res)
   });
 });
 
-
+/**
+ * Ajout d'un beacon dans l'établissement
+ * @param   id_etablissement : ID de l'établissement
+ * @param   id : ID du beacon
+ * @param 	nom: Nom du beacon
+ * @return  JSON : Beacon créé ou err
+ */
 router.post('/add', function(req, res)
 {
 	req.checkBody('id_etablissement', 'Id Etablissement invalide').notEmpty().isMongoId();

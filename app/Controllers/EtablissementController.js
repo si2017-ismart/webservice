@@ -6,8 +6,6 @@ var express = require('express')
 var mongoose     	= require('mongoose');
 var async 			= require("async");
 
-//var apicache = require('apicache').options({ debug: true }).middleware;
-
 
 // Connexion vers la base
 // --------------------------------------------------------------
@@ -18,14 +16,11 @@ var connection = require('../../db_mongo.js');
 var Etablissement = require('../../app/Model/Etablissement');
 var Beacon = 		require('../../app/Model/Beacon');
 
-// Chargement du Model
-// --------------------------------------------------------------
-//var HelpSession = require('../../app/Tools/Session');
-
 
 /**
  *	@brief 		Récupère un Etablissement via son Id
  *	@param 		id : ObjectId de l'utilisateur
+ *	@return 	JSON : Etablissement ou false
  **/
 router.get('/getById/:id', function(req, res)
 {
@@ -63,6 +58,11 @@ router.get('/getById/:id', function(req, res)
 	});
 });
 
+/**
+ * Retourne un établissement via son nom
+ * @param  	name : Nom de l'etablissement
+ * @return 	JSON : Etablissement ou false
+ */
 router.get('/getByName/:name', function(req, res)
 {
 	req.checkParams('name', 'Nom invalide').notEmpty();
@@ -98,6 +98,11 @@ router.get('/getByName/:name', function(req, res)
 });
 
 
+/**
+ * Retourne la liste des intervenants dans l'etablissement indiqué
+ * @param  	id: Identifiant de l'établissement
+ * @return 	JSON : Intervenants ou err
+ */
 router.get('/intervenants/getByEtablissement/:id', function(req, res)
 {
 	req.checkParams('id', 'Id de l\'etablissement invalide').notEmpty().isMongoId();
@@ -122,6 +127,11 @@ router.get('/intervenants/getByEtablissement/:id', function(req, res)
 	});
 });
 
+/**
+ * Retourne un intervenant via son ID
+ * @param  	ID : Identifiant de l'intervenant
+ * @return 	JSON : Intervenant ou err
+ */
 router.get('/intervenants/getById/:id', function(req, res)
 {
 	req.checkParams('id', 'Id de l\'etablissement invalide').notEmpty().isMongoId();
@@ -146,6 +156,12 @@ router.get('/intervenants/getById/:id', function(req, res)
 	})
 });
 
+
+/**
+ * Vérifie si une session est toujours actif
+ * @param  	token : Token de la session (ID)
+ * @return  Boolean : true si actif, false sinon
+ */
 router.get('/sessions/checkToken/:token', function(req, res)
 {
 	req.checkParams('token', 'Token invalide').notEmpty();
@@ -174,8 +190,10 @@ router.get('/sessions/checkToken/:token', function(req, res)
 })
 
 /**
- *
- */
+ * Recupération de la session
+ * @param  	token : Token de la session (ID)
+ * @return 	JSON: session ou false
+ **/
 router.get('/sessions/getByToken/:token', function(req, res)
 {
 	req.checkParams('token', 'Token invalide').notEmpty();
@@ -195,6 +213,13 @@ router.get('/sessions/getByToken/:token', function(req, res)
 	});
 });
 
+
+/**
+ * Met à jour la position du beacon pour la session indiquée
+ * @param  	id_beacon : Id du beacon
+ * @param 	token : Token de la session (ID)
+ * @return 	JSON : true ou err
+ */
 router.post('/sessions/setBeacon', function(req, res)
 {
 	req.checkBody('id_beacon', 'Id du beacon invalide').notEmpty();
@@ -234,15 +259,19 @@ router.post('/sessions/setBeacon', function(req, res)
 			}
 		}
 	})
-
 });
 
 
 /**
  * Création d'un établissement
- * @param  {[type]} req      [description]
- * @param  {[type]} res){} [description]
- * @return {[type]}          [description]
+ * @param  	nom 	: Nom de l'établissement
+ * @param  	mail 	: Mail de contact de l'établissement
+ * @param 	adresse : Adresse de l'établissement
+ * @param 	ville 	: Ville de l'établissement
+ * @param 	pays 	: Pays de l'établissement
+ * @param 	zip 	: Zip de l'établissement
+ * @param 	tel 	: Téléphone de contact de l'établissement
+ * @return 	JSON 	: ID de l'établissement ou err
  */
 router.post('/add', function(req, res)
 {
@@ -305,6 +334,14 @@ router.post('/add', function(req, res)
 	})
 });
 
+
+/**
+ * Login de l'intervenant
+ * @param  	nom_etablissement : Nom de l'établissement
+ * @param  	identifiant : Identifiant de l'intervenant
+ * @param 	password : Mot de passe de l'intervenant
+ * @return 	JSON : Id de l'etablissement et de l'intervenant ou False
+ */
 router.post('/intervenants/login', function(req, res)
 {
 	req.checkBody('nom_etablissement', 'Nom de l\'etablissement invalide').notEmpty();
@@ -352,6 +389,13 @@ router.post('/intervenants/login', function(req, res)
 	})
 })
 
+
+/**
+ * Login de l'administrateur etablissement
+ * @param  	identifiant : Identifiant de l'administrateur
+ * @param 	password : Mot de passe de l'administrateur
+ * @return 	JSON : id de l'etablissement ou false
+ */
 router.post('/loginAdmin', function(req, res)
 {
 	req.checkBody('identifiant', 'Identifiant invalide').notEmpty();
@@ -397,6 +441,14 @@ router.post('/loginAdmin', function(req, res)
 		})
 });
 
+
+/**
+ * Création d'un administrateur pour un établissement
+ * @param  	id: ID de l'établissement
+ * @param 	identifiant : Identifiant de l'administrateur
+ * @param 	password : Mot de passe de l'administrateur
+ * @return 	Boolean true ou err
+ */
 router.post('/createAdmin', function(req, res)
 {
 	req.checkBody('id', 'Id invalide').notEmpty().isMongoId();
@@ -442,10 +494,18 @@ router.post('/createAdmin', function(req, res)
 			});
 		}
 	})
-
-
 });
 
+
+/**
+ * Création d'un intervenant pour un établissement
+ * @param  	id: ID de l'établissemnet
+ * @param 	nom: Nom de l'intervenant
+ * @param 	prenom: Prénom de l'intervenant
+ * @param 	identifiant : identifiant de l'intervenant
+ * @param 	password : Mot de passe de l'intervenant
+ * @return 	String : intervenant créé ou false
+ */
 router.post('/intervenants/add', function(req, res)
 {
 	req.checkBody('id', 'Id invalide').notEmpty().isMongoId();
@@ -502,11 +562,13 @@ router.post('/intervenants/add', function(req, res)
 			});
 		}
 	});
-
-
 });
 
-// Recherche si une session sans intervenant existe
+/**
+ * Recherche si une session active existe pour l'établissement
+ * @param  	id_etablissement: ID de l'établissement
+ * @return 	JSON : Liste des sessions ou 'Nothing'
+ */
 router.get('/operator_ack/:id_etablissement', function(req, res)
 {
   req.checkParams('id_etablissement', 'id_etablissement missing').notEmpty().isMongoId();
@@ -531,8 +593,12 @@ router.get('/operator_ack/:id_etablissement', function(req, res)
   });
 });
 
-
-
+/**
+ * Prise en charge d'une session par un intervenant
+ * @param  	id_intervenant: Id de l'intervenant
+ * @param 	token : Token de la session
+ * @return 	JSON : token ou false
+ */
 router.post('/intervenants/takeSession', function(req, res)
 {
 	req.checkBody('id_intervenant', 'Id de l\'intervenant invalide').notEmpty().isMongoId();
@@ -593,6 +659,11 @@ router.post('/intervenants/takeSession', function(req, res)
 	});
 });
 
+/**
+ * Fin de session
+ * @param   token : Token de la session (ID)
+ * @return  Boolean : true ou JSON : err
+ */
 router.post('/intervenants/endSession', function(req, res)
 {
 	req.checkBody('token', 'Token invalide').notEmpty();
@@ -610,6 +681,11 @@ router.post('/intervenants/endSession', function(req, res)
 	var promise = Etablissement.findOne({"sessions.id": token}, {"sessions.$": 1}).exec();
 	promise.then(function(session)
 	{
+		console.log('session trouvée')
+		if(!session)
+		{
+			throw new Error("No Session");
+		}
 		// Récupérer l'id de l'intervenant et mettre sa disponibilité à true
 		return Etablissement.update({"intervenants._id": session.sessions[0].intervenant.id}, {"$set": {"intervenants.$.disponibilite": true}});
 	})

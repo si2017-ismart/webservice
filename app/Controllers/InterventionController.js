@@ -6,9 +6,6 @@ var express = require('express')
 var mongoose     	= require('mongoose');
 var async 			= require("async");
 
-//var apicache = require('apicache').options({ debug: true }).middleware;
-
-
 // Connexion vers la base
 // --------------------------------------------------------------
 var connection = require('../../db_mongo.js');
@@ -19,7 +16,10 @@ var Intervention = require('../../app/Model/Intervention');
 var Etablissement = require('../../app/Model/Etablissement');
 
 
-
+/**
+ * Récupération de tous les logs
+ * @return  JSON : Liste des interventions ou err
+ */
 router.get('/', function(req, res)
 {
 	var promise = Intervention.find({});
@@ -33,6 +33,11 @@ router.get('/', function(req, res)
 	});
 });
 
+/**
+ * Récupération des interventions par date
+ * @param   date : Date pour chercher les interventions
+ * @return  JSON : Liste des interventions ou err
+ */
 router.get('/getByDate/:date', function(req, res)
 {
 	var promise = Intervention.find({date: req.params.date});
@@ -46,6 +51,11 @@ router.get('/getByDate/:date', function(req, res)
 	});
 });
 
+/**
+ * Récupération des interventions par l'id de l'établissement
+ * @param   id : ID de l'établissement
+ * @return  JSON : Liste des interventions ou err
+ */
 router.get('/getByEtablissement/:id', function(req, res)
 {
 	var promise = Intervention.find({"etablissement.id": req.params.id});
@@ -59,6 +69,12 @@ router.get('/getByEtablissement/:id', function(req, res)
 	});
 });
 
+/**
+ * Récupération des interventions d'un établissement pour une date donnée
+ * @param   id : ID de l'établissement
+ * @param   date : date des interventions
+ * @return  JSON : Liste des interventions ou err
+ */
 router.get('/getByEtablissementByDate/:id/:date', function(req, res)
 {
 	var promise = Intervention.find({"etablissement.id": req.params.id, date: req.params.date});
@@ -72,6 +88,12 @@ router.get('/getByEtablissementByDate/:id/:date', function(req, res)
 	});
 });
 
+
+/**
+ * Création d'un log d'intervention
+ * @param   token : Token de la session (ID)
+ * @return  JSON : Intervention logged ou JSON : err
+ */
 router.post('/add', function(req, res)
 {
 	req.checkBody('token', 'Token invalide').notEmpty();
@@ -131,6 +153,12 @@ router.post('/add', function(req, res)
 	});
 });
 
+/**
+ * Ajout de la satisfaction à une intervention
+ * @param   token : Token de la session pour laquelle l'intervention a été générée
+ * @param 	int satisfaction : Note donnée pour l'utilisateur
+ * @return  JSON : "Satisfaction saved" ou err
+ */
 router.post('/satisfaction', function(req, res)
 {
 	req.checkBody('token', 'Token invalide').notEmpty();
