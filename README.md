@@ -1,7 +1,23 @@
-# webservice
-## Liste des URI
-### Beacons
-#### GET
+# Webservice
+## Table of Contents
+1. [Liste des URI](#urilist)<br>
+ 1.1 [Beacons](#beacons)<br>
+  1.1.1 [GET](#beaconsget)<br>
+  1.1.2 [POST](#beaconspost)<br>
+ 1.2 [Etablissement](#etablissement)<br>
+  1.2.1 [GET](#etablissementget)<br>
+  1.2.2 [POST](#etablissementpost)<br>
+ 1.3 [Interventions](#interventions)<br>
+  1.3.1 [GET](#interventionsget)<br>
+  1.3.2 [POST](#interventionspost)<br>
+2. [Docker](#docker)<br>
+ 2.1 [Install Docker](#installdocker)<br>
+ 2.2 [Build docker](#builddocker)<br>
+ 2.3 [Start containers](#startcontainers)<br>
+
+## Liste des URI<a name="urilist"></a>
+### Beacons<a name="beacons"></a>
+#### GET<a name="beaconsget"></a>
 Liste de tous les beacons
 >'url':3000/api/beacons
 
@@ -14,7 +30,7 @@ Liste de tous les beacons d'un etablissement
 Demande un jeton d'aide pour le client ()
 >'url':3000/api/beacons/needHelp/:profil/:name/:sex/:id_beacon
 
-#### POST
+#### POST<a name="beaconspost"></a>
 
 Liste de tous les beacons
 ```
@@ -28,8 +44,8 @@ Liste de tous les beacons
  portee				: portée théorique du beacon
  ```
 
-### Etablissement
-#### GET
+### Etablissement<a name="etablissement"></a>
+#### GET<a name="etablissementget"></a>
 Informations d'un etablissement avec son ID
 >'url':3000/api/etablissements/getById/:id
 
@@ -51,7 +67,7 @@ Informations d'une session
 Vérifie si une session est non prise en charge et renvoie la session
 >'url':3000/api/etablissements/operator_ack/:id_etablissement
 
-#### POST
+#### POST<a name="etablissementpost"></a>
 
 Mise à jour du beacon de la session, renvoie true en cas de succès
 ```
@@ -127,8 +143,8 @@ token			: Token de la session
 ```
 
 
-### Interventions
-#### GET
+### Interventions<a name="interventions"></a>
+#### GET<a name="interventionsget"></a>
 
 Récupère la liste des interventions
 >'url':3000/api/interventions
@@ -142,7 +158,7 @@ Récupère la liste des interventions pour un etablissement avec son ID
 Récupère la liste des interventions pour un etablissement avec son ID en fonction d'une Date
 >'url':3000/api/interventions/getByEtablissementByDate/:id/:date
 
-#### POST
+#### POST<a name="interventionspost"></a>
 
 Création d'un log d'intervention pour une session
 ```
@@ -159,20 +175,19 @@ token			: Token de la session
 satisfaction 	: Satisfaction du user : entier
 ```
 
-
-
-
-
-
-
-
-
-
-# Docker
-You will be able to run the webservice with mongodb
-## Install docker
+# Docker<a name="docker"></a>
+Le webservice peut être démarré avec Docker.
+## Installation & configuration<a name="installdocker"></a>
+Installez Docker et docker-compose et démarrez docker.
 https://docs.docker.com/engine/installation/
-## Build the project
-docker-compose build
-## Up the containers
-docker-compose up
+et
+https://docs.docker.com/compose/install/
+
+Vous pouvez changer les ports via le docker-compose.yml qui est à la racine de ce repo. 
+Il faut s'assurer que dans db_mongo.js la ligne suivante écoute sur l'adresse du container:
+`module.exports = mongoose.connect('mongodb://@container:27017/weguide');`
+## Build the project<a name="builddocker"></a>
+Avant de lancer un container vous devez le construire. À la racine du projet 
+`docker-compose build`
+## Start containers<a name="startcontainers"></a>
+`docker-compose up`
